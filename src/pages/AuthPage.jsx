@@ -1,56 +1,72 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    name: '', // Add name field for registration
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    role: 'customer',
   });
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // Initialize navigate function
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validateForm = () => {
+    if (!formData.email || !formData.password || (!isLogin && !formData.name)) {
+      setErrorMessage('Please fill in all fields');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setErrorMessage('Please enter a valid email');
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation for empty fields
-    if (!formData.email || !formData.password || (!isLogin && !formData.name)) {
-      setErrorMessage('Please fill in all fields');
-      return;
-    }
-
-    const url = isLogin
-      ? 'http://localhost:5000/api/auth/login'
-      : 'http://localhost:5000/api/auth/register';
-
+    if (!validateForm()) return;
+  
+    const url = `http://localhost:5000/api/auth/${
+      isLogin ? 'login' : 'register'
+    }`;
+  
+    console.log('API URL:', url); // Add this line to check the URL
+  
+    setIsLoading(true);
     try {
       const response = await axios.post(url, formData);
-
-      if (isLogin) {
-        // Save token in localStorage on login
-        localStorage.setItem('token', response.data.token);
-        alert('Login successful');
-        
-        // Redirect to homepage after login
-        navigate('/');
-      } else {
-        alert('Registration successful');
-        setIsLogin(true); // After registration, switch to login mode
+  
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token); // Store token
+        alert(isLogin ? 'Login successful' : 'Registration successful');
+        navigate('/'); // Redirect to the homepage or dashboard after login/registration
       }
-
-      setErrorMessage(''); // Reset error message on success
+  
+      setErrorMessage('');
     } catch (error) {
       console.error('Authentication error:', error);
       setErrorMessage(error.response?.data?.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -60,19 +76,33 @@ const AuthPage = () => {
       >
         <h1 className="text-2xl font-bold mb-6">{isLogin ? 'Login' : 'Sign Up'}</h1>
 
-        {/* Show Name field only if it's Sign Up */}
         {!isLogin && (
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Role</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded"
+              >
+                <option value="customer">Customer</option>
+                <option value="restaurantOwner">Restaurant Owner</option>
+              </select>
+            </div>
+          </>
         )}
 
         <div className="mb-4">
@@ -89,17 +119,25 @@ const AuthPage = () => {
 
         <div className="mb-6">
           <label className="block text-gray-700 mb-2">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-2 text-blue-500"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
         </div>
 
-        {/* Display error message if there's one */}
         {errorMessage && (
           <div className="mb-4 text-red-500 text-sm">
             <p>{errorMessage}</p>
@@ -108,9 +146,12 @@ const AuthPage = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          className={`w-full bg-blue-500 text-white py-2 px-4 rounded ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+          }`}
+          disabled={isLoading}
         >
-          {isLogin ? 'Login' : 'Sign Up'}
+          {isLoading ? 'Loading...' : isLogin ? 'Login' : 'Sign Up'}
         </button>
 
         <p className="mt-4 text-center">
@@ -119,7 +160,8 @@ const AuthPage = () => {
             type="button"
             onClick={() => {
               setIsLogin(!isLogin);
-              setFormData({ name: '', email: '', password: '' }); // Reset form data
+              setFormData({ name: '', email: '', password: '', role: 'customer' });
+              setErrorMessage('');
             }}
             className="text-blue-500 underline"
           >
@@ -132,4 +174,3 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
-
