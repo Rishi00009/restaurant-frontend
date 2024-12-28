@@ -9,7 +9,7 @@ const RestaurantListPage = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/restaurants')
+      .get('http://localhost:5000/api/restaurants') // Ensure this is the correct API endpoint
       .then((response) => {
         setRestaurants(response.data);
         setLoading(false);
@@ -29,44 +29,57 @@ const RestaurantListPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold text-indigo-600 mb-8">Restaurant Listings</h1>
+    <div className="container mx-auto py-8 px-4 bg-indigo-50"> {/* Mild pastel background color */}
+      <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
+        Restaurant Listings
+      </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {restaurants.length > 0 ? (
           restaurants.map((restaurant) => (
             <div
               key={restaurant._id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300"
+              className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 duration-300"
             >
               <img
                 src={restaurant.image || 'https://via.placeholder.com/300'}
                 alt={restaurant.name}
-                className="w-full h-48 object-cover"
+                className="w-full h-56 object-cover"
               />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-indigo-700">{restaurant.name}</h2>
-                <p className="text-gray-500 mt-2">{restaurant.cuisine}</p>
-                <p className="text-gray-400">{restaurant.location}</p>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800">{restaurant.name}</h2>
+                <p className="text-gray-600 mt-2">{restaurant.cuisine}</p>
+                <p className="text-gray-500 text-sm">{restaurant.location}</p>
 
-                {/* Render hours or fallback message */}
-                <p className="text-gray-500 mt-2">
+                {/* Rating */}
+                <p className="text-yellow-400 mt-2 text-sm">
+                  Rating: {restaurant.rating ? restaurant.rating : 'Not rated yet'}
+                </p>
+
+                {/* Price Range */}
+                <p className="text-gray-600 text-sm mt-2">
+                  Price Range: ${restaurant.price} (estimate)
+                </p>
+
+                {/* Open Hours */}
+                <p className="text-gray-600 text-sm mt-2">
                   Open Hours: {restaurant.hours || 'Hours not available'}
                 </p>
 
-                {/* Render description or fallback message */}
-                <p className="text-gray-600 mt-2">
+                {/* Description */}
+                <p className="text-gray-600 text-sm mt-2">
                   {restaurant.description || 'No description available'}
                 </p>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <Link
+                {/* Actions */}
+                <div className="mt-4 flex justify-between items-center">
+                <Link
                     to={`/menu/${restaurant._id}`}
-                    className="text-blue-500 hover:underline"
+                    className="text-indigo-600 hover:bg-indigo-100 text-lg font-semibold py-3 px-6 rounded-lg border-2 border-indigo-600 transition-colors duration-300"
                   >
                     View Menu
                   </Link>
-                  <button className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                                    <button className="bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                     Add to Favorites
                   </button>
                 </div>

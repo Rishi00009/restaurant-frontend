@@ -69,8 +69,8 @@ const CartPage = () => {
             <div key={item._id} className="flex items-center justify-between mb-4 p-4 bg-white shadow-lg rounded-lg">
               <div className="flex items-center space-x-4">
                 <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} className="w-16 h-16 object-cover" />
-                <div>
-                  <h2 className="font-semibold text-gray-700">{item.name}</h2>
+                <div className="flex flex-col items-center justify-center">
+                  <h2 className="font-semibold text-gray-700 text-center">{item.name}</h2> {/* Center item name */}
                   <p className="text-gray-500">${item.price}</p>
                 </div>
               </div>

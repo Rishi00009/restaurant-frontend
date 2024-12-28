@@ -110,7 +110,7 @@ const HomePage = () => {
       </div>
 
       {/* Search Filters Section */}
-      <div className="flex justify-center items-center mb-8">
+      <div className="flex justify-center items-center mb-8 space-x-4">
         <input
           type="text"
           name="location"
@@ -162,12 +162,27 @@ const HomePage = () => {
                 <h2 className="text-xl font-semibold text-indigo-700">{restaurant.name}</h2>
                 <p className="text-gray-500 mt-2">{restaurant.cuisine}</p>
                 <p className="text-gray-400">{restaurant.location}</p>
+
+                {/* Display rating */}
+                <p className="text-yellow-500 mt-2">
+                  Rating: {restaurant.rating ? restaurant.rating : 'Not rated yet'}
+                </p>
+
+                {/* Display price */}
+                <p className="text-gray-500 mt-2">
+                  Price Range: ${restaurant.price} (estimate)
+                </p>
+
+                {/* Render hours or fallback message */}
                 <p className="text-gray-500 mt-2">
                   Open Hours: {restaurant.hours || 'Hours not available'}
                 </p>
+
+                {/* Render description or fallback message */}
                 <p className="text-gray-600 mt-2">
                   {restaurant.description || 'No description available'}
                 </p>
+
                 <Link
                   to={`/menu/${restaurant._id}`}
                   className="text-blue-500 mt-4 inline-block hover:underline"

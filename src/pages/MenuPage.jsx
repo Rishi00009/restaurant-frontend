@@ -10,32 +10,30 @@ const MenuPage = () => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [restaurantName, setRestaurantName] = useState('');
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      try {
-        if (!restaurantId) {
-          setError('Restaurant ID is undefined');
-          setLoading(false);
-          return;
-        }
+    console.log("Fetching menu items for restaurantId:", restaurantId);
 
-        const response = await axios.get(`http://localhost:5000/api/menu/${restaurantId}`);
-        setMenuItems(response.data);
+    // Fetch restaurant details (name) and menu items
+    const fetchRestaurantAndMenu = async () => {
+      try {
+        // Fetch restaurant data to get the name
+        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        setRestaurantName(restaurantResponse.data.name);
+
+        // Fetch menu items for the restaurant
+        const menuResponse = await axios.get(`http://localhost:5000/api/menu/${restaurantId}`);
+        setMenuItems(menuResponse.data);
+        
         setLoading(false);
       } catch (err) {
         setLoading(false);
-        if (err.response) {
-          setError(`Error: ${err.response.data.message || 'Failed to load menu items.'}`);
-        } else if (err.request) {
-          setError('No response from server.');
-        } else {
-          setError(`Request error: ${err.message}`);
-        }
+        setError(`Error: ${err.response ? err.response.data.message : err.message}`);
       }
     };
 
-    fetchMenuItems();
+    fetchRestaurantAndMenu();
   }, [restaurantId]);
 
   const addToCart = (menuItem) => {
@@ -73,20 +71,20 @@ const MenuPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4">
-      {/* Cart UI */}
-      <div className="fixed top-4 left-4 bg-white shadow-lg rounded-lg p-4 z-50 w-80">
+    <div className="container mx-auto py-6 px-4 relative bg-gray-50"> {/* Simple background color */}
+      {/* Cart UI - Positioned fixed */}
+      <div className="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 w-80">
         <h2 className="text-lg font-semibold text-gray-700">Cart</h2>
         {cart.length > 0 ? (
           <>
             <div className="space-y-2">
               {cart.map((item) => (
                 <div key={item._id} className="flex justify-between items-center">
-                  <span className="text-sm">{item.name} (x{item.quantity})</span>
+                  <span className="text-sm text-gray-700">{item.name} (x{item.quantity})</span>
                 </div>
               ))}
             </div>
-            <p className="text-gray-500 mt-2">Total: ${totalAmount.toFixed(2)}</p>
+            <p className="text-gray-700 mt-2">Total: ${totalAmount.toFixed(2)}</p>
             <button
               onClick={handleCheckout}
               className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 transition duration-300"
@@ -99,8 +97,8 @@ const MenuPage = () => {
         )}
       </div>
 
-      <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">
-        Menu for Restaurant {restaurantId}
+      <h1 className="text-3xl font-semibold text-center text-indigo-700 mb-6">
+        Menu for {restaurantName}
       </h1>
       {menuItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -115,11 +113,27 @@ const MenuPage = () => {
                 className="w-full h-40 object-cover"
               />
               <div className="p-4">
-                <h2 className="text-xl font-semibold text-indigo-700">{item.name}</h2>
-                <p className="text-gray-500">{item.description}</p>
-                <p className="text-gray-700 font-bold mt-2">${item.price}</p>
+                <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
+                <p className="text-gray-600">{item.description}</p>
+                <p className="text-gray-800 font-bold mt-2 text-lg">${item.price}</p>
+
+                {/* Display ingredients and calories */}
+                <div className="mt-2 text-sm text-gray-500">
+                  <p><strong>Ingredients:</strong> {item.ingredients.join(", ")}</p>
+                  <p><strong>Calories:</strong> {item.calories}</p>
+                </div>
+
+                {/* Display tags */}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {item.tags.map((tag, index) => (
+                    <span key={index} className="bg-yellow-100 text-yellow-600 text-xs px-2 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
                 <button
-                  className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+                  className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
                   onClick={() => addToCart(item)}
                 >
                   Add to Cart
@@ -136,5 +150,3 @@ const MenuPage = () => {
 };
 
 export default MenuPage;
-
-
