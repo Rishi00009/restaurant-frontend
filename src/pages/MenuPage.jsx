@@ -62,8 +62,11 @@ const MenuPage = () => {
     navigate('/cart', { state: { cart, totalAmount } });
   };
 
-  const viewReviews = (item) => {
-    setSelectedItemReviews(item.reviews || []);
+  const viewReviews = (itemId) => {
+    const item = menuItems.find((item) => item._id === itemId);
+    if (item && item.reviews) {
+      setSelectedItemReviews(item.reviews);
+    }
   };
 
   const closeReviews = () => {
@@ -95,12 +98,6 @@ const MenuPage = () => {
                 <div key={item._id} className="flex flex-col">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-700">{item.name} (x{item.quantity})</span>
-                    <button
-                      className="text-blue-500 text-xs hover:underline"
-                      onClick={() => viewReviews(item)}
-                    >
-                      View Reviews
-                    </button>
                   </div>
                 </div>
               ))}
@@ -120,36 +117,36 @@ const MenuPage = () => {
 
       {/* Menu Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-24">
-  {menuItems.map((item) => (
-    <div key={item._id} className="bg-white shadow-lg rounded-lg p-4">
-      <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded-t-lg" />
-      <div className="mt-4">
-        <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-        <p className="text-gray-600">{item.description}</p>
-        <p className="text-lg font-semibold text-indigo-600 mt-2">${item.price}</p>
+        {menuItems.map((item) => (
+          <div key={item._id} className="bg-white shadow-lg rounded-lg p-4">
+            <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded-t-lg" />
+            <div className="mt-4">
+              <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
+              <p className="text-gray-600">{item.description}</p>
+              <p className="text-lg font-semibold text-indigo-600 mt-2">${item.price}</p>
 
-        {/* Flex container for buttons */}
-        <div className="flex justify-between mt-4">
-          {/* Add to Cart button on the left */}
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-            onClick={() => addToCart(item)}
-          >
-            Add to Cart
-          </button>
+              {/* Flex container for buttons */}
+              <div className="flex justify-between mt-4">
+                {/* Add to Cart button on the left */}
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+                  onClick={() => addToCart(item)}
+                >
+                  Add to Cart
+                </button>
 
-          {/* View Reviews button on the right */}
-          <button
-            className="text-blue-500 text-xs hover:underline"
-            onClick={() => viewReviews(item)}
-          >
-            View Reviews
-          </button>
-        </div>
+                {/* View Reviews button */}
+                <button
+                  className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
+                  onClick={() => viewReviews(item._id)}
+                >
+                  View Reviews
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
       {/* Reviews Modal */}
       {selectedItemReviews && (

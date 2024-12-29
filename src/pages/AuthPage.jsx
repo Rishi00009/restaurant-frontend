@@ -9,6 +9,7 @@ const AuthPage = () => {
     email: '',
     password: '',
     role: 'customer',
+    restaurantName: '', // For restaurant owners
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,10 @@ const AuthPage = () => {
     }
     if (formData.password.length < 6) {
       setErrorMessage('Password must be at least 6 characters long');
+      return false;
+    }
+    if (!isLogin && formData.role === 'restaurantOwner' && !formData.restaurantName) {
+      setErrorMessage('Please enter a restaurant name');
       return false;
     }
     return true;
@@ -89,6 +94,19 @@ const AuthPage = () => {
                 <option value="restaurantOwner">Restaurant Owner</option>
               </select>
             </div>
+
+            {formData.role === 'restaurantOwner' && (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Restaurant Name</label>
+                <input
+                  type="text"
+                  name="restaurantName"
+                  value={formData.restaurantName}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+            )}
           </>
         )}
 
@@ -141,7 +159,13 @@ const AuthPage = () => {
             type="button"
             onClick={() => {
               setIsLogin(!isLogin);
-              setFormData({ name: '', email: '', password: '', role: 'customer' });
+              setFormData({
+                name: '',
+                email: '',
+                password: '',
+                role: 'customer',
+                restaurantName: '',
+              });
               setErrorMessage('');
             }}
             className="text-blue-500 underline"
