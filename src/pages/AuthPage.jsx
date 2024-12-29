@@ -39,25 +39,18 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-  
-    const url = `http://localhost:5000/api/auth/${
-      isLogin ? 'login' : 'register'
-    }`;
-  
-    console.log('API URL:', url); // Add this line to check the URL
-  
+
+    const url = `http://localhost:5000/api/auth/${isLogin ? 'login' : 'register'}`;
     setIsLoading(true);
+
     try {
       const response = await axios.post(url, formData);
-  
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token); // Store token
+        localStorage.setItem('token', response.data.token); // Store token in localStorage
         alert(isLogin ? 'Login successful' : 'Registration successful');
-        navigate('/'); // Redirect to the homepage or dashboard after login/registration
+        navigate('/');
       }
-  
       setErrorMessage('');
     } catch (error) {
       console.error('Authentication error:', error);
@@ -66,14 +59,10 @@ const AuthPage = () => {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-full max-w-md"
-      >
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6">{isLogin ? 'Login' : 'Sign Up'}</h1>
 
         {!isLogin && (
@@ -86,10 +75,8 @@ const AuthPage = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded"
-                required
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Role</label>
               <select
@@ -113,7 +100,6 @@ const AuthPage = () => {
             value={formData.email}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded"
-            required
           />
         </div>
 
@@ -126,7 +112,6 @@ const AuthPage = () => {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded"
-              required
             />
             <button
               type="button"
@@ -138,11 +123,7 @@ const AuthPage = () => {
           </div>
         </div>
 
-        {errorMessage && (
-          <div className="mb-4 text-red-500 text-sm">
-            <p>{errorMessage}</p>
-          </div>
-        )}
+        {errorMessage && <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>}
 
         <button
           type="submit"

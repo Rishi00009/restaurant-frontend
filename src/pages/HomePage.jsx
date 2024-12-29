@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -8,8 +8,8 @@ const HomePage = () => {
   const [search, setSearch] = useState({ location: '', cuisine: '', minRating: '', maxPrice: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token') || null); // Using localStorage for token
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
 
   // Handle search input changes
   const handleSearchChange = (e) => {
@@ -18,7 +18,7 @@ const HomePage = () => {
   };
 
   // Filter restaurants based on search criteria
-  const filterRestaurants = () => {
+  const filterRestaurants = useCallback(() => {
     const { location, cuisine, minRating, maxPrice } = search;
     const filtered = restaurants.filter((restaurant) => {
       return (
@@ -29,18 +29,16 @@ const HomePage = () => {
       );
     });
     setFilteredRestaurants(filtered);
-  };
+  }, [restaurants, search]); // Only recreate filterRestaurants when restaurants or search change
 
   // Fetch all restaurants
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/restaurants');
-      console.log(response.data);  // Log API response to check structure
       setRestaurants(response.data);
       setFilteredRestaurants(response.data); // Set initial filtered list to all restaurants
     } catch (error) {
-      console.error(error);  // Log the error for debugging
       setError('Failed to load restaurants.');
     } finally {
       setLoading(false);
@@ -50,6 +48,7 @@ const HomePage = () => {
   // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem('token');
+    setToken(null); // Update the state to force a re-render
     navigate('/');
   };
 
@@ -66,7 +65,17 @@ const HomePage = () => {
   // Apply filters when search state changes
   useEffect(() => {
     filterRestaurants();
-  }, [search, restaurants]);
+  }, [search, restaurants, filterRestaurants]);
+
+  // Update token state if token exists in localStorage
+  const effect = useCallback(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken); // Update state to trigger re-render
+    }
+  }, []);
+  
+  useEffect(effect, []);
 
   // Loading, error, or restaurant display
   if (loading) {
@@ -183,12 +192,15 @@ const HomePage = () => {
                   {restaurant.description || 'No description available'}
                 </p>
 
-                <Link
-                  to={`/menu/${restaurant._id}`}
-                  className="text-blue-500 mt-4 inline-block hover:underline"
-                >
-                  View Menu
-                </Link>
+                {/* Render View Menu button only for logged-in users */}
+                {token && (
+                  <Link
+                    to={`/menu/${restaurant._id}`}
+                    className="text-blue-500 mt-4 inline-block hover:underline"
+                  >
+                    View Menu
+                  </Link>
+                )}
               </div>
             </div>
           ))

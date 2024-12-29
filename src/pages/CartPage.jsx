@@ -33,7 +33,7 @@ const CartPage = () => {
         else if (action === 'decrease' && item.quantity > 1) item.quantity -= 1;
       }
       return item;
-    }).filter(item => item.quantity > 0);
+    });
 
     setCart(updatedCart);
     updateTotalAmount(updatedCart);
@@ -53,59 +53,102 @@ const CartPage = () => {
   };
 
   const handleProceedToPayment = () => {
-    // Redirect to the payment page with the cart and totalAmount data
     navigate('/payment', { state: { cart, totalAmount } });
+  };
+
+  const addReview = (id, review) => {
+    const updatedCart = cart.map((item) => {
+      if (item._id === id) {
+        item.reviews = item.reviews || []; // Initialize reviews array if not present
+        item.reviews.push(review);
+      }
+      return item;
+    });
+    setCart(updatedCart);
   };
 
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold text-gray-700 mb-8">Your Cart</h1>
 
+      {/* Total and Proceed to Payment at the top */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-xl font-semibold text-gray-700">Total: ${totalAmount.toFixed(2)}</h2>
+        <button
+          onClick={handleProceedToPayment}
+          className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
+        >
+          Proceed to Payment
+        </button>
+      </div>
+
       {cart.length === 0 ? (
         <p className="text-lg text-gray-500">Your cart is empty.</p>
       ) : (
-        <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {cart.map((item) => (
-            <div key={item._id} className="flex items-center justify-between mb-4 p-4 bg-white shadow-lg rounded-lg">
-              <div className="flex items-center space-x-4">
-                <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} className="w-16 h-16 object-cover" />
-                <div className="flex flex-col items-center justify-center">
-                  <h2 className="font-semibold text-gray-700 text-center">{item.name}</h2> {/* Center item name */}
-                  <p className="text-gray-500">${item.price}</p>
+            <div key={item._id} className="flex flex-col bg-white shadow-lg rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={item.image || 'https://via.placeholder.com/100'}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <h2 className="font-semibold text-gray-700">{item.name}</h2>
+                    <p className="text-gray-500">${item.price}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => handleQuantityChange(item._id, 'decrease')}
+                    className="text-xl text-gray-500 hover:text-red-500"
+                  >
+                    -
+                  </button>
+                  <span className="text-lg text-gray-700">{item.quantity}</span>
+                  <button
+                    onClick={() => handleQuantityChange(item._id, 'increase')}
+                    className="text-xl text-gray-500 hover:text-green-500"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => removeFromCart(item._id)}
+                    className="ml-4 text-red-500 hover:text-red-600"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => handleQuantityChange(item._id, 'decrease')}
-                  className="text-xl text-gray-500 hover:text-red-500"
-                >
-                  -
-                </button>
-                <span className="text-lg text-gray-700">{item.quantity}</span>
-                <button
-                  onClick={() => handleQuantityChange(item._id, 'increase')}
-                  className="text-xl text-gray-500 hover:text-green-500"
-                >
-                  +
-                </button>
-                <button
-                  onClick={() => removeFromCart(item._id)}
-                  className="ml-4 text-red-500 hover:text-red-600"
-                >
-                  Remove
-                </button>
+              <div className="mt-4">
+                <h3 className="text-md font-semibold text-gray-600">Reviews:</h3>
+                <ul className="list-disc ml-5 mb-2">
+                  {item.reviews?.map((review, index) => (
+                    <li key={index} className="text-gray-700">{review}</li>
+                  ))}
+                </ul>
+                <textarea
+                  placeholder="Write a review"
+                  className="border rounded-lg px-4 py-2 w-full mb-2"
+                  rows="2"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (e.target.value.trim()) {
+                        addReview(item._id, e.target.value.trim());
+                        e.target.value = '';
+                      }
+                    }
+                  }}
+                />
+                <small className="text-gray-400">
+                  Press Enter to add your review.
+                </small>
               </div>
             </div>
           ))}
-          <div className="mt-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-700">Total: ${totalAmount.toFixed(2)}</h2>
-            <button
-              onClick={handleProceedToPayment}
-              className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300"
-            >
-              Proceed to Payment
-            </button>
-          </div>
         </div>
       )}
     </div>

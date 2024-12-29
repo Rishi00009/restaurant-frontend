@@ -8,6 +8,8 @@ import PaymentPage from './pages/PaymentPage';
 import AdminRestaurantPage from './pages/AdminRestaurantPage';
 import UserProfile from './pages/UserProfile';
 import axios from 'axios';
+import RestaurantProfile from './pages/RestaurantProfile';
+
 
 const App = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -56,6 +58,7 @@ const App = () => {
         <Route path="/admin/restaurants" element={<AdminRestaurantPage />} />
         <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/payment" element={<PaymentPage cart={cart} />} /> {/* Pass cart to PaymentPage */}
+        <Route path="/restaurant/profile" element={<RestaurantProfile />} />
       </Routes>
     </Router>
   );
