@@ -67,16 +67,6 @@ const HomePage = () => {
     filterRestaurants();
   }, [search, restaurants, filterRestaurants]);
 
-  // Update token state if token exists in localStorage
-  const effect = useCallback(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken); // Update state to trigger re-render
-    }
-  }, []);
-  
-  useEffect(effect, []);
-
   // Loading, error, or restaurant display
   if (loading) {
     return <div className="text-center text-lg text-gray-600">Loading...</div>;
@@ -171,28 +161,10 @@ const HomePage = () => {
                 <h2 className="text-xl font-semibold text-indigo-700">{restaurant.name}</h2>
                 <p className="text-gray-500 mt-2">{restaurant.cuisine}</p>
                 <p className="text-gray-400">{restaurant.location}</p>
-
-                {/* Display rating */}
                 <p className="text-yellow-500 mt-2">
                   Rating: {restaurant.rating ? restaurant.rating : 'Not rated yet'}
                 </p>
-
-                {/* Display price */}
-                <p className="text-gray-500 mt-2">
-                  Price Range: ${restaurant.price} (estimate)
-                </p>
-
-                {/* Render hours or fallback message */}
-                <p className="text-gray-500 mt-2">
-                  Open Hours: {restaurant.hours || 'Hours not available'}
-                </p>
-
-                {/* Render description or fallback message */}
-                <p className="text-gray-600 mt-2">
-                  {restaurant.description || 'No description available'}
-                </p>
-
-                {/* Render View Menu button only for logged-in users */}
+                <p className="text-gray-500 mt-2">Price: ${restaurant.price || 'N/A'}</p>
                 {token && (
                   <Link
                     to={`/menu/${restaurant._id}`}
