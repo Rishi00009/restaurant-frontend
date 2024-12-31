@@ -46,7 +46,7 @@ const AuthPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const url = `http://localhost:5000/api/auth/${isLogin ? 'login' : 'register'}`;
+    const url = `https://restaurant-backend-yx5h.onrender.com/api/auth/${isLogin ? 'login' : 'register'}`;
     setIsLoading(true);
 
     try {

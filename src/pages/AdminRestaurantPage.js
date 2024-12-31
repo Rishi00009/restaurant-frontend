@@ -8,7 +8,7 @@ const AdminRestaurantPage = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/restaurants');
+      const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants');
       setRestaurants(response.data);
     } catch (error) {
       console.error('Error fetching restaurants:', error);

@@ -35,7 +35,7 @@ const HomePage = () => {
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/restaurants');
+      const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants');
       setRestaurants(response.data);
       setFilteredRestaurants(response.data); // Set initial filtered list to all restaurants
     } catch (error) {

@@ -9,7 +9,7 @@ const RestaurantListPage = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/restaurants') // Ensure this is the correct API endpoint
+      .get('https://restaurant-backend-yx5h.onrender.com/api/restaurants') // Ensure this is the correct API endpoint
       .then((response) => {
         setRestaurants(response.data);
         setLoading(false);

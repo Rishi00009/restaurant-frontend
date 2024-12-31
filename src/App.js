@@ -19,7 +19,7 @@ const App = () => {
 
   // Fetch restaurants from the API
   useEffect(() => {
-    axios.get('http://localhost:5000/api/restaurants').then((response) => {
+    axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants').then((response) => {
       setRestaurants(response.data);
     });
   }, []);

@@ -42,7 +42,7 @@ const RestaurantProfile = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await axios.get('http://localhost:5000/api/restaurants', {
+      const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants', {
         params: { name: restaurantName },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -105,7 +105,7 @@ const RestaurantProfile = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/restaurants/${restaurant._id}`,
+        `https://restaurant-backend-yx5h.onrender.com/api/restaurants/${restaurant._id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -153,7 +153,7 @@ const RestaurantProfile = () => {
       };
 
       await axios.post(
-        `http://localhost:5000/api/menuItems`,
+        `https://restaurant-backend-yx5h.onrender.com/api/menuItems`,
         menuItem,
         {
           headers: { Authorization: `Bearer ${token}` },

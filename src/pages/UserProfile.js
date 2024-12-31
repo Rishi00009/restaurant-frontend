@@ -26,7 +26,7 @@ const UserProfile = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:5000/api/auth/profile', {
+        const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
@@ -63,7 +63,7 @@ const UserProfile = () => {
 
     try {
       const response = await axios.put(
-        'http://localhost:5000/api/auth/profile',
+        'https://restaurant-backend-yx5h.onrender.com/api/auth/profile',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

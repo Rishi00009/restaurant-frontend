@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const socket = io('http://localhost:5000', { autoConnect: false });
+const socket = io('https://restaurant-backend-yx5h.onrender.com', { autoConnect: false });
 
 const OrderStatus = () => {
   const { orderId } = useParams();
@@ -13,7 +13,7 @@ const OrderStatus = () => {
   useEffect(() => {
     // Fetch initial order status
     axios
-      .get(`http://localhost:5000/api/orders/${orderId}/status`)
+      .get(`https://restaurant-backend-yx5h.onrender.com/api/orders/${orderId}/status`)
       .then((response) => {
         // If no order found, set orderStatus to null
         if (!response.data || !response.data.status) {

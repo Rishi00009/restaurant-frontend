@@ -5,7 +5,7 @@ const PaymentHistoryPage = () => {
   const [payments, setPayments] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/payments/history', {
+    axios.get('https://restaurant-backend-yx5h.onrender.com/api/payments/history', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
     .then((response) => setPayments(response.data.payments))

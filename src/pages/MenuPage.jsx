@@ -17,10 +17,10 @@ const MenuPage = () => {
     const fetchRestaurantAndMenu = async () => {
       try {
         // Fetch restaurant details (name) and menu items
-        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const restaurantResponse = await axios.get(`https://restaurant-backend-yx5h.onrender.com/api/restaurants/${restaurantId}`);
         setRestaurantName(restaurantResponse.data.name);
 
-        const menuResponse = await axios.get(`http://localhost:5000/api/menu/${restaurantId}`);
+        const menuResponse = await axios.get(`https://restaurant-backend-yx5h.onrender.com/api/menu/${restaurantId}`);
         setMenuItems(menuResponse.data);
 
         setLoading(false);
