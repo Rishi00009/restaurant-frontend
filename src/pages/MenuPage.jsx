@@ -12,11 +12,13 @@ const MenuPage = () => {
   const [error, setError] = useState(null);
   const [restaurantName, setRestaurantName] = useState('');
   const [selectedItemReviews, setSelectedItemReviews] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [priceFilter, setPriceFilter] = useState('');
+  const [filteredMenuItems, setFilteredMenuItems] = useState([]);
 
   useEffect(() => {
     const fetchRestaurantAndMenu = async () => {
       try {
-        // Fetch restaurant details (name) and menu items
         const restaurantResponse = await axios.get(`https://restaurant-backend-yx5h.onrender.com/api/restaurants/${restaurantId}`);
         setRestaurantName(restaurantResponse.data.name);
 
@@ -32,6 +34,28 @@ const MenuPage = () => {
 
     fetchRestaurantAndMenu();
   }, [restaurantId]);
+
+  useEffect(() => {
+    const applyFilters = () => {
+      let filtered = menuItems;
+
+      if (categoryFilter) {
+        filtered = filtered.filter((item) => item.category === categoryFilter);
+      }
+
+      if (priceFilter === 'low') {
+        filtered = filtered.filter((item) => item.price <= 10);
+      } else if (priceFilter === 'medium') {
+        filtered = filtered.filter((item) => item.price > 10 && item.price <= 20);
+      } else if (priceFilter === 'high') {
+        filtered = filtered.filter((item) => item.price > 20);
+      }
+
+      setFilteredMenuItems(filtered);
+    };
+
+    applyFilters();
+  }, [categoryFilter, priceFilter, menuItems]);
 
   const addToCart = (menuItem) => {
     setCart((prevCart) => {
@@ -83,6 +107,45 @@ const MenuPage = () => {
         Menu for {restaurantName}
       </h1>
 
+      {/* Filter Section */}
+      <div className="mb-6">
+        <div className="flex gap-4 justify-center">
+          {/* Category Filter */}
+          <div>
+            <label htmlFor="category" className="text-sm font-semibold text-gray-700">Category</label>
+            <select
+              id="category"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="mt-2 p-2 border rounded-lg"
+            >
+              <option value="">All Categories</option>
+              <option value="Pizza">Pizza</option>
+              <option value="Burger">Burger</option>
+              <option value="Pasta">Pasta</option>
+              <option value="Salad">Salad</option>
+            </select>
+          </div>
+
+          {/* Price Filter */}
+          <div>
+            <label htmlFor="price" className="text-sm font-semibold text-gray-700">Price</label>
+            <select
+              id="price"
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value)}
+              className="mt-2 p-2 border rounded-lg"
+            >
+              <option value="">All Prices</option>
+              <option value="low">Low (Under $10)</option>
+              <option value="medium">Medium ($10 - $20)</option>
+              <option value="high">High (Over $20)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Cart Section */}
       <div className="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 w-80">
         <h2 className="text-lg font-semibold text-gray-700">Cart</h2>
         {cart.length > 0 ? (
@@ -109,8 +172,9 @@ const MenuPage = () => {
         )}
       </div>
 
+      {/* Menu Items */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-24">
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <div key={item._id} className="bg-white shadow-lg rounded-lg p-4">
             <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded-t-lg" />
             <div className="mt-4">
@@ -163,6 +227,7 @@ const MenuPage = () => {
         ))}
       </div>
 
+      {/* Reviews Modal */}
       {selectedItemReviews && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-1/2">
