@@ -14,19 +14,15 @@ const MenuPage = () => {
   const [selectedItemReviews, setSelectedItemReviews] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching menu items for restaurantId:", restaurantId);
-
-    // Fetch restaurant details (name) and menu items
     const fetchRestaurantAndMenu = async () => {
       try {
-        // Fetch restaurant data to get the name
+        // Fetch restaurant details (name) and menu items
         const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
         setRestaurantName(restaurantResponse.data.name);
 
-        // Fetch menu items for the restaurant
         const menuResponse = await axios.get(`http://localhost:5000/api/menu/${restaurantId}`);
         setMenuItems(menuResponse.data);
-        
+
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -83,12 +79,10 @@ const MenuPage = () => {
 
   return (
     <div className="container mx-auto py-6 px-4 relative bg-gray-50">
-      {/* Header */}
       <h1 className="text-3xl font-semibold text-center text-indigo-700 mb-6">
         Menu for {restaurantName}
       </h1>
 
-      {/* Cart Section */}
       <div className="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50 w-80">
         <h2 className="text-lg font-semibold text-gray-700">Cart</h2>
         {cart.length > 0 ? (
@@ -115,7 +109,6 @@ const MenuPage = () => {
         )}
       </div>
 
-      {/* Menu Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-24">
         {menuItems.map((item) => (
           <div key={item._id} className="bg-white shadow-lg rounded-lg p-4">
@@ -123,19 +116,41 @@ const MenuPage = () => {
             <div className="mt-4">
               <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
               <p className="text-gray-600">{item.description}</p>
+              <p className="text-gray-700 mt-2">
+                <strong>Category:</strong> {item.category}
+              </p>
               <p className="text-lg font-semibold text-indigo-600 mt-2">${item.price}</p>
-
-              {/* Flex container for buttons */}
+              <p className="text-gray-700 mt-2">
+                <strong>Calories:</strong> {item.calories} kcal
+              </p>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-800">Ingredients</h3>
+                <ul className="list-disc list-inside text-gray-600 mt-2">
+                  {item.ingredients.map((ingredient, index) => (
+                    <li key={index}>{ingredient}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-800">Tags</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {item.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
               <div className="flex justify-between mt-4">
-                {/* Add to Cart button on the left */}
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
                   onClick={() => addToCart(item)}
                 >
                   Add to Cart
                 </button>
-
-                {/* View Reviews button */}
                 <button
                   className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
                   onClick={() => viewReviews(item._id)}
@@ -148,7 +163,6 @@ const MenuPage = () => {
         ))}
       </div>
 
-      {/* Reviews Modal */}
       {selectedItemReviews && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-1/2">

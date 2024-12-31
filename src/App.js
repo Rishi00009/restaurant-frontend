@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'; // Add this import statement
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
@@ -9,11 +9,13 @@ import AdminRestaurantPage from './pages/AdminRestaurantPage';
 import UserProfile from './pages/UserProfile';
 import axios from 'axios';
 import RestaurantProfile from './pages/RestaurantProfile';
-
+import OrderStatus from './pages/OrderStatus'; // Correct import
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
 
 const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [cart, setCart] = useState([]); // Initialize cart state
+  const token = localStorage.getItem('token'); // Get token for route protection
 
   // Fetch restaurants from the API
   useEffect(() => {
@@ -52,13 +54,21 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage restaurants={restaurants} addToCart={addToCart} />} />
-        <Route path="/menu/:restaurantId" element={<MenuPage addToCart={addToCart} />} />  {/* Pass addToCart function */}
+        <Route path="/menu/:restaurantId" element={<MenuPage addToCart={addToCart} />} />
         <Route path="/cart" element={<CartPage cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/admin/restaurants" element={<AdminRestaurantPage />} />
-        <Route path="/user/profile" element={<UserProfile />} />
-        <Route path="/payment" element={<PaymentPage cart={cart} />} /> {/* Pass cart to PaymentPage */}
-        <Route path="/restaurant/profile" element={<RestaurantProfile />} />
+        <Route path="/admin/restaurants" element={token ? <AdminRestaurantPage /> : <Navigate to="/auth" />} />
+        <Route path="/user/profile" element={token ? <UserProfile /> : <Navigate to="/auth" />} />
+        <Route path="/payment" element={token ? <PaymentPage cart={cart} /> : <Navigate to="/auth" />} />
+        <Route path="/restaurant/profile" element={token ? <RestaurantProfile /> : <Navigate to="/auth" />} />
+        
+        {/* Route for OrderStatus page */}
+        <Route
+          path="/order/:orderId"
+          element={token ? <OrderStatus /> : <Navigate to="/auth" />}
+        />
+        
+        <Route path="/payment-history" element={token ? <PaymentHistoryPage /> : <Navigate to="/auth" />} />
       </Routes>
     </Router>
   );

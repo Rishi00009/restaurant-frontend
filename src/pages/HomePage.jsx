@@ -57,6 +57,11 @@ const HomePage = () => {
     navigate('/user/profile');
   };
 
+  // Navigate to the order tracking page
+  const handleTrackOrder = () => {
+    navigate('/track-order');
+  };
+
   // Fetch the restaurant data when the component loads
   useEffect(() => {
     fetchRestaurants();
@@ -102,6 +107,12 @@ const HomePage = () => {
                 className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
               >
                 Manage Profile
+              </button>
+              <button
+                onClick={handleTrackOrder}
+                className="bg-purple-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-purple-600 transition duration-300"
+              >
+                Track Order
               </button>
             </>
           )}

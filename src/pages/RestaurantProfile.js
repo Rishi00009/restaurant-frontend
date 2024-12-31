@@ -11,6 +11,16 @@ const RestaurantProfile = () => {
     description: '',
     imageUrl: '',
   });
+  const [menuData, setMenuData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    price: '',
+    imageUrl: '',
+    ingredients: '',
+    calories: '',
+    tags: '',
+  });
   const [imagePreview, setImagePreview] = useState(null);
 
   const handleInputChange = (e) => {
@@ -69,6 +79,11 @@ const RestaurantProfile = () => {
     }
   };
 
+  const handleMenuFormChange = (e) => {
+    const { name, value } = e.target;
+    setMenuData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const isValidUrl = (url) => {
     try {
       new URL(url);
@@ -108,6 +123,57 @@ const RestaurantProfile = () => {
       setImagePreview(null);
     } catch (err) {
       setError('Error updating restaurant profile. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const handleAddMenuItem = async (e) => {
+    e.preventDefault();
+
+    if (!restaurant || !restaurant._id) {
+      setError('Restaurant data is missing. Please search and select a restaurant first.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+
+    if (!menuData.name || !menuData.price || !menuData.category) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    try {
+      const menuItem = {
+        ...menuData,
+        restaurantId: restaurant._id,
+        price: parseFloat(menuData.price),
+        calories: parseInt(menuData.calories, 10),
+        ingredients: menuData.ingredients.split(','),
+        tags: menuData.tags.split(','),
+      };
+
+      await axios.post(
+        `http://localhost:5000/api/menuItems`,
+        menuItem,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert('Menu item added successfully!');
+      setMenuData({
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        imageUrl: '',
+        ingredients: '',
+        calories: '',
+        tags: '',
+      });
+      setImagePreview(null);  // Clear image preview
+    } catch (err) {
+      setError('Error adding menu item. Please try again.');
       console.error(err);
     }
   };
@@ -186,6 +252,95 @@ const RestaurantProfile = () => {
               className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
             >
               Update Profile
+            </button>
+          </form>
+
+          <hr className="my-6" />
+
+          <h3 className="text-2xl font-semibold text-indigo-600 mb-4">Add Menu Item</h3>
+          <form onSubmit={handleAddMenuItem}>
+            <div>
+              <label className="block font-semibold mb-1">Menu Item Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={menuData.name}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Menu item name"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Description:</label>
+              <textarea
+                name="description"
+                value={menuData.description}
+                onChange={handleMenuFormChange}
+                rows="4"
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Menu item description"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Category:</label>
+              <input
+                type="text"
+                name="category"
+                value={menuData.category}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Menu item category"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Price:</label>
+              <input
+                type="number"
+                name="price"
+                value={menuData.price}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Price"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Ingredients:</label>
+              <input
+                type="text"
+                name="ingredients"
+                value={menuData.ingredients}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Comma separated ingredients"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Calories:</label>
+              <input
+                type="number"
+                name="calories"
+                value={menuData.calories}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Calories"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Tags:</label>
+              <input
+                type="text"
+                name="tags"
+                value={menuData.tags}
+                onChange={handleMenuFormChange}
+                className="border rounded-lg px-4 py-2 w-full mb-4"
+                placeholder="Comma separated tags"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+            >
+              Add Menu Item
             </button>
           </form>
         </div>
