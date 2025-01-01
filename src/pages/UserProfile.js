@@ -92,94 +92,97 @@ const UserProfile = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h2 className="text-3xl font-bold text-indigo-600 mb-4">User Profile</h2>
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        {!isEditing ? (
-          <>
-            {user.profilePicture && (
-              <img
-                src={user.profilePicture}
-                alt="Profile"
-                className="w-24 h-24 rounded-full mx-auto mb-4"
-              />
-            )}
-            <p><strong>Name:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Username:</strong> {user.username || 'N/A'}</p>
-            <p><strong>Role:</strong> {user.role}</p>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 mt-4 transition duration-300"
-            >
-              Edit Profile
-            </button>
-          </>
-        ) : (
-          <>
-            <div>
-              <label className="block font-semibold mb-1">Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="border rounded-lg px-4 py-2 w-full mb-4"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="border rounded-lg px-4 py-2 w-full mb-4"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Username:</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                className="border rounded-lg px-4 py-2 w-full mb-4"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Profile Picture URL:</label>
-              <input
-                type="text"
-                name="profilePicture"
-                value={formData.profilePicture}
-                onChange={handleInputChange}
-                className="border rounded-lg px-4 py-2 w-full mb-4"
-              />
-            </div>
-            <button
-              onClick={handleSave}
-              className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 mt-4 transition duration-300"
-            >
-              Save Changes
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-600 mt-4 transition duration-300 ml-4"
-            >
-              Cancel
-            </button>
-          </>
+  <h2 className="text-3xl font-bold text-indigo-600 mb-4">User Profile</h2>
+  <div className="bg-white shadow-lg rounded-lg p-6">
+    {!isEditing ? (
+      <>
+        {user.profilePicture && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={user.profilePicture}
+              alt="Profile"
+              className="w-32 h-32 rounded-full border-4 border-indigo-500 shadow-xl transform hover:scale-110 transition duration-300 ease-in-out"
+            />
+          </div>
         )}
-      </div>
-      {user.role === 'restaurantOwner' && (
+        <p><strong>Name:</strong> {user.name}</p>
+        <p><strong>Email:</strong> {user.email}</p>
+        <p><strong>Username:</strong> {user.username || 'N/A'}</p>
+        <p><strong>Role:</strong> {user.role}</p>
         <button
-          onClick={handleRestaurantProfileRedirect}
+          onClick={() => setIsEditing(true)}
+          className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 mt-4 transition duration-300"
+        >
+          Edit Profile
+        </button>
+      </>
+    ) : (
+      <>
+        <div>
+          <label className="block font-semibold mb-1">Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className="border rounded-lg px-4 py-2 w-full mb-4"
+          />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className="border rounded-lg px-4 py-2 w-full mb-4"
+          />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Username:</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleInputChange}
+            className="border rounded-lg px-4 py-2 w-full mb-4"
+          />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Profile Picture URL:</label>
+          <input
+            type="text"
+            name="profilePicture"
+            value={formData.profilePicture}
+            onChange={handleInputChange}
+            className="border rounded-lg px-4 py-2 w-full mb-4"
+          />
+        </div>
+        <button
+          onClick={handleSave}
           className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 mt-4 transition duration-300"
         >
-          Manage Restaurant Profile
+          Save Changes
         </button>
-      )}
-    </div>
+        <button
+          onClick={() => setIsEditing(false)}
+          className="bg-gray-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-gray-600 mt-4 transition duration-300 ml-4"
+        >
+          Cancel
+        </button>
+      </>
+    )}
+  </div>
+  {user.role === 'restaurantOwner' && (
+    <button
+      onClick={handleRestaurantProfileRedirect}
+      className="bg-blue-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-600 mt-4 transition duration-300"
+    >
+      Manage Restaurant Profile
+    </button>
+  )}
+</div>
+      
   );
 };
 

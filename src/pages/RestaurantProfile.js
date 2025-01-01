@@ -131,7 +131,7 @@ const RestaurantProfile = () => {
     e.preventDefault();
 
     if (!restaurant || !restaurant._id) {
-      setError('Restaurant data is missing. Please search and select a restaurant first.');
+      alert('Restaurant data is missing. Please search and select a restaurant first.');
       return;
     }
 

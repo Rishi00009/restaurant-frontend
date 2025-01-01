@@ -24,10 +24,10 @@ const AdminRestaurantPage = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/restaurants/${editingId}`, form);
+        await axios.put(`https://restaurant-backend-yx5h.onrender.com/api/restaurants/${editingId}`, form);
         alert('Restaurant updated');
       } else {
-        await axios.post('http://localhost:5000/api/restaurants', form);
+        await axios.post('https://restaurant-backend-yx5h.onrender.com/api/restaurants', form);
         alert('Restaurant created');
       }
       setForm({ name: '', description: '' });
@@ -46,7 +46,7 @@ const AdminRestaurantPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/restaurants/${id}`);
+      await axios.delete(`https://restaurant-backend-yx5h.onrender.com/api/restaurants/${id}`);
       alert('Restaurant deleted');
       fetchRestaurants();
     } catch (error) {

@@ -64,7 +64,7 @@ const App = () => {
         
         {/* Route for OrderStatus page */}
         <Route
-          path="/order/:orderId"
+          path="/track-order/:orderId"
           element={token ? <OrderStatus /> : <Navigate to="/auth" />}
         />
         
