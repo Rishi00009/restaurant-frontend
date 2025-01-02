@@ -91,8 +91,27 @@ const MenuPage = () => {
               />
               <div className="p-4">
                 <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-                <p className="text-sm text-gray-600">{item.description || 'No description available'}</p>
-                <p className="text-gray-700 font-medium mt-2">Price: ${item.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-600 mt-2">{item.description || 'No description available.'}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  <span className="font-medium">Category:</span> {item.category || 'N/A'}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  <span className="font-medium">Calories:</span> {item.calories || 'N/A'} kcal
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  <span className="font-medium">Ingredients:</span> {item.ingredients?.join(', ') || 'N/A'}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {item.tags?.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="text-xs bg-blue-100 text-blue-600 py-1 px-2 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-gray-700 font-medium mt-3">Price: ${item.price.toFixed(2)}</p>
                 <button
                   onClick={() => addToCart(item)}
                   className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition"
