@@ -30,7 +30,7 @@ const HomePage = () => {
       );
     });
     setFilteredRestaurants(filtered);
-  }, [restaurants, search]); // Only recreate filterRestaurants when restaurants or search change
+  }, [restaurants, search]);
 
   // Fetch all restaurants
   const fetchRestaurants = async () => {
@@ -38,7 +38,7 @@ const HomePage = () => {
     try {
       const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants');
       setRestaurants(response.data);
-      setFilteredRestaurants(response.data); // Set initial filtered list to all restaurants
+      setFilteredRestaurants(response.data);
     } catch (error) {
       setError('Failed to load restaurants.');
     } finally {
@@ -50,14 +50,14 @@ const HomePage = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    setToken(null); // Update the state to force a re-render
-    setUserRole('customer'); // Reset user role to customer on logout
+    setToken(null);
+    setUserRole('customer');
     navigate('/');
   };
 
-  // Navigate to the restaurant's management page (for owners)
-  const handleRestaurantManagement = (restaurantId) => {
-    navigate(`/manage-restaurant/${restaurantId}`);
+  // Navigate to the user data management page
+  const handleManageUserData = () => {
+    navigate('/manage-users');
   };
 
   // Fetch the restaurant data when the component loads
@@ -70,7 +70,6 @@ const HomePage = () => {
     filterRestaurants();
   }, [search, restaurants, filterRestaurants]);
 
-  // Loading, error, or restaurant display
   if (loading) {
     return <div className="text-center text-lg text-gray-600">Loading...</div>;
   }
@@ -102,10 +101,18 @@ const HomePage = () => {
               </button>
               {userRole === 'owner' && (
                 <button
-                  onClick={() => handleRestaurantManagement('your-restaurant-id')} // Pass correct restaurant ID
+                  onClick={() => navigate(`/manage-restaurant/your-restaurant-id`)} // Pass correct restaurant ID
                   className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
                 >
                   Manage Restaurant
+                </button>
+              )}
+              {userRole === 'admin' && (
+                <button
+                  onClick={handleManageUserData}
+                  className="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                >
+                  Manage User Data
                 </button>
               )}
               <button
