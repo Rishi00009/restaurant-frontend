@@ -13,22 +13,26 @@ const MenuPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [restaurantName, setRestaurantName] = useState('');
-  const [selectedItemReviews, setSelectedItemReviews] = useState(null);
-  const [customizations, setCustomizations] = useState({});
-  const isOwner = localStorage.getItem('role') === 'owner';
 
   useEffect(() => {
     const fetchRestaurantAndMenu = async () => {
       try {
+        // Fetch restaurant details
         const restaurantRes = await axios.get(
           `https://restaurant-backend-yx5h.onrender.com/api/restaurants/${restaurantId}`
         );
         setRestaurantName(restaurantRes.data.name);
 
+        // Fetch menu items
         const menuRes = await axios.get(
           `https://restaurant-backend-yx5h.onrender.com/api/menu/${restaurantId}`
         );
-        setMenuItems(menuRes.data);
+
+        if (menuRes.data.length > 0) {
+          setMenuItems(menuRes.data);
+        } else {
+          setError('No menu items available for this restaurant.');
+        }
 
         setLoading(false);
       } catch (err) {
@@ -40,33 +44,19 @@ const MenuPage = () => {
     fetchRestaurantAndMenu();
   }, [restaurantId]);
 
-  const handleCustomizationChange = (itemId, specialInstructions) => {
-    setCustomizations((prev) => ({
-      ...prev,
-      [itemId]: { specialInstructions },
-    }));
-  };
-
   const addToCart = (menuItem) => {
-    const { specialInstructions } = customizations[menuItem._id] || { specialInstructions: '' };
-
     setCart((prevCart) => {
-      const existingItem = prevCart.find(
-        (item) => item._id === menuItem._id && item.specialInstructions === specialInstructions
-      );
+      const existingItem = prevCart.find((item) => item._id === menuItem._id);
 
       let updatedCart;
       if (existingItem) {
         updatedCart = prevCart.map((item) =>
-          item._id === menuItem._id && item.specialInstructions === specialInstructions
+          item._id === menuItem._id
             ? { ...item, quantity: item.quantity + 1, totalPrice: (item.quantity + 1) * item.price }
             : item
         );
       } else {
-        updatedCart = [
-          ...prevCart,
-          { ...menuItem, quantity: 1, totalPrice: menuItem.price, specialInstructions },
-        ];
+        updatedCart = [...prevCart, { ...menuItem, quantity: 1, totalPrice: menuItem.price }];
       }
 
       setTotalAmount(updatedCart.reduce((total, item) => total + item.totalPrice, 0));
@@ -76,17 +66,6 @@ const MenuPage = () => {
 
   const handleCheckout = () => {
     navigate('/cart', { state: { cart, totalAmount } });
-  };
-
-  const viewReviews = (itemId) => {
-    const item = menuItems.find((item) => item._id === itemId);
-    if (item?.reviews) {
-      setSelectedItemReviews(item.reviews);
-    }
-  };
-
-  const closeReviews = () => {
-    setSelectedItemReviews(null);
   };
 
   if (loading) return <p className="text-center text-gray-500">Loading menu...</p>;
@@ -108,26 +87,16 @@ const MenuPage = () => {
               <img src={item.image} alt={item.name} className="h-40 w-full object-cover" />
               <div className="p-4">
                 <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
-                <p className="text-gray-600">{item.description}</p>
-                <p className="text-gray-700 font-semibold mt-2">${item.price.toFixed(2)}</p>
-
-                <button
-                  onClick={() => viewReviews(item._id)}
-                  className="text-blue-500 hover:underline mt-2 block"
-                >
-                  View Reviews
-                </button>
-
-                {isOwner && (
-                  <input
-                    type="text"
-                    value={customizations[item._id]?.specialInstructions || ''}
-                    onChange={(e) => handleCustomizationChange(item._id, e.target.value)}
-                    placeholder="Special Instructions"
-                    className="mt-2 p-2 border rounded-lg w-full"
-                  />
-                )}
-
+                <p className="text-gray-600">{item.description || 'No description available.'}</p>
+                <p className="text-gray-700 font-semibold mt-2">
+                  Category: {item.category || 'Uncategorized'}
+                </p>
+                <p className="text-gray-600">Price: ${item.price.toFixed(2)}</p>
+                <p className="text-gray-600 mt-2">Calories: {item.calories || 'N/A'}</p>
+                <p className="text-gray-600">Ingredients: {item.ingredients?.join(', ') || 'N/A'}</p>
+                <p className="text-gray-600 mt-2">
+                  Tags: {item.tags?.join(', ') || 'No tags available'}
+                </p>
                 <button
                   onClick={() => addToCart(item)}
                   className="bg-indigo-600 text-white py-2 px-4 rounded-lg mt-4 w-full hover:bg-indigo-700"
@@ -147,9 +116,6 @@ const MenuPage = () => {
               {cart.map((item) => (
                 <div key={item._id} className="mt-4">
                   <p className="font-medium text-gray-700">{item.name} (x{item.quantity})</p>
-                  {item.specialInstructions && (
-                    <p className="text-sm text-gray-500">Note: {item.specialInstructions}</p>
-                  )}
                   <p className="text-sm text-gray-600">Total: ${item.totalPrice.toFixed(2)}</p>
                 </div>
               ))}
@@ -166,27 +132,6 @@ const MenuPage = () => {
           )}
         </aside>
       </main>
-
-      {/* Reviews Modal */}
-      {selectedItemReviews && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg relative w-96">
-            <h3 className="text-2xl font-semibold mb-4">Reviews</h3>
-            <button
-              onClick={closeReviews}
-              className="absolute top-2 right-2 text-red-500 text-lg"
-            >
-              ×
-            </button>
-            {selectedItemReviews.map((review, idx) => (
-              <div key={idx} className="mt-2">
-                <p className="font-semibold">{review.username}</p>
-                <p className="text-gray-600">{review.comment}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
