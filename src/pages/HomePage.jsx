@@ -9,7 +9,6 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null); // Using localStorage for token
-  const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'customer'); // Add role to track the user type
   const navigate = useNavigate();
 
   // Handle search input changes
@@ -30,7 +29,7 @@ const HomePage = () => {
       );
     });
     setFilteredRestaurants(filtered);
-  }, [restaurants, search]);
+  }, [restaurants, search]); // Only recreate filterRestaurants when restaurants or search change
 
   // Fetch all restaurants
   const fetchRestaurants = async () => {
@@ -38,7 +37,7 @@ const HomePage = () => {
     try {
       const response = await axios.get('https://restaurant-backend-yx5h.onrender.com/api/restaurants');
       setRestaurants(response.data);
-      setFilteredRestaurants(response.data);
+      setFilteredRestaurants(response.data); // Set initial filtered list to all restaurants
     } catch (error) {
       setError('Failed to load restaurants.');
     } finally {
@@ -49,15 +48,18 @@ const HomePage = () => {
   // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    setToken(null);
-    setUserRole('customer');
+    setToken(null); // Update the state to force a re-render
     navigate('/');
   };
 
-  // Navigate to the user data management page
-  const handleManageUserData = () => {
-    navigate('/manage-users');
+  // Navigate to the user profile page
+  const handleUserManagement = () => {
+    navigate('/user/profile');
+  };
+
+  // Navigate to the order tracking page
+  const handleTrackOrder = () => {
+    navigate('/track-order');
   };
 
   // Fetch the restaurant data when the component loads
@@ -70,6 +72,7 @@ const HomePage = () => {
     filterRestaurants();
   }, [search, restaurants, filterRestaurants]);
 
+  // Loading, error, or restaurant display
   if (loading) {
     return <div className="text-center text-lg text-gray-600">Loading...</div>;
   }
@@ -99,24 +102,14 @@ const HomePage = () => {
               >
                 Logout
               </button>
-              {userRole === 'owner' && (
-                <button
-                  onClick={() => navigate(`/manage-restaurant/your-restaurant-id`)} // Pass correct restaurant ID
-                  className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
-                >
-                  Manage Restaurant
-                </button>
-              )}
-              {userRole === 'admin' && (
-                <button
-                  onClick={handleManageUserData}
-                  className="bg-yellow-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
-                >
-                  Manage User Data
-                </button>
-              )}
               <button
-                onClick={() => navigate('/track-order')}
+                onClick={handleUserManagement}
+                className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+              >
+                Manage Profile
+              </button>
+              <button
+                onClick={handleTrackOrder}
                 className="bg-purple-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-purple-600 transition duration-300"
               >
                 Track Order
