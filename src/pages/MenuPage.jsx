@@ -13,6 +13,7 @@ const MenuPage = () => {
   const [restaurantName, setRestaurantName] = useState('');
   const [selectedItemReviews, setSelectedItemReviews] = useState(null);
   const [customizations, setCustomizations] = useState({});
+  const [isOwner, setIsOwner] = useState(localStorage.getItem('role') === 'owner'); // Check if the user is the owner
 
   useEffect(() => {
     const fetchRestaurantAndMenu = async () => {
@@ -133,76 +134,61 @@ const MenuPage = () => {
             <div key={item._id} className="bg-white shadow-md rounded-lg overflow-hidden">
               <img src={item.image} alt={item.name} className="h-40 w-full object-cover" />
               <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-800">{item.name}</h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
-                <p className="text-gray-800 font-semibold mt-2">${item.price}</p>
-                <p className="text-sm text-gray-500 mt-2">Calories: {item.calories} kcal</p>
+                <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
+                <p className="text-gray-600">{item.description}</p>
+                <p className="text-gray-700 font-semibold mt-2">${item.price}</p>
 
-                {/* Ingredients Section */}
-                <div className="mt-4">
-                <h4 className="text-md font-semibold text-gray-700 mb-2">Ingredients:</h4>
-                <div className="flex gap-2 overflow-x-auto">
-                  {item.ingredients.map((ingredient, index) => (
-                    <span
-                      key={index}
-                      className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-lg shadow-sm"
-                    >
-                      {ingredient}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                {/* Reviews Section */}
+                <button
+                  onClick={() => viewReviews(item._id)}
+                  className="text-blue-500 hover:underline mt-2"
+                >
+                  View Reviews
+                </button>
 
-                {/* Customization */}
-                <textarea
-                  placeholder="Add special instructions"
-                  className="w-full mt-2 p-2 border rounded-lg text-sm text-gray-600"
-                  onChange={(e) => handleCustomizationChange(item._id, e.target.value)}
-                ></textarea>
+                {/* Special Instructions (only visible for owners) */}
+                {isOwner && (
+                  <input
+                    type="text"
+                    value={customizations[item._id]?.specialInstructions || ''}
+                    onChange={(e) => handleCustomizationChange(item._id, e.target.value)}
+                    placeholder="Special Instructions"
+                    className="mt-2 p-2 border rounded-lg w-full"
+                  />
+                )}
 
-                <div className="mt-4 flex justify-between">
-                  <button
-                    className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600"
-                    onClick={() => addToCart(item)}
-                  >
-                    Add to Cart
-                  </button>
-                  <button
-                    className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-                    onClick={() => viewReviews(item._id)}
-                  >
-                    Reviews
-                  </button>
-                </div>
+                {/* Add to Cart Button */}
+                <button
+                  onClick={() => addToCart(item)}
+                  className="bg-indigo-600 text-white py-2 px-4 rounded-lg mt-4 w-full hover:bg-indigo-700"
+                >
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Reviews Modal */}
-      {selectedItemReviews && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 w-2/3">
-            <h2 className="text-xl font-semibold mb-4">Reviews</h2>
-            {selectedItemReviews.length > 0 ? (
-              <ul className="space-y-2">
+        {/* Reviews Modal */}
+        {selectedItemReviews && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg w-96">
+              <h3 className="text-2xl font-semibold mb-4">Reviews</h3>
+              <button onClick={closeReviews} className="text-red-500 text-lg absolute top-2 right-2">
+                X
+              </button>
+              <div className="space-y-2">
                 {selectedItemReviews.map((review, index) => (
-                  <li key={index} className="border-b pb-2 text-gray-600">{review.comment}</li>
+                  <div key={index}>
+                    <p className="font-semibold">{review.username}</p>
+                    <p className="text-gray-600">{review.comment}</p>
+                  </div>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500">No reviews available.</p>
-            )}
-            <button
-              className="bg-indigo-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-indigo-600"
-              onClick={closeReviews}
-            >
-              Close
-            </button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

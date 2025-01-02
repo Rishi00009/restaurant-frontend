@@ -9,6 +9,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null); // Using localStorage for token
+  const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'customer'); // Add role to track the user type
   const navigate = useNavigate();
 
   // Handle search input changes
@@ -48,18 +49,15 @@ const HomePage = () => {
   // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     setToken(null); // Update the state to force a re-render
+    setUserRole('customer'); // Reset user role to customer on logout
     navigate('/');
   };
 
-  // Navigate to the user profile page
-  const handleUserManagement = () => {
-    navigate('/user/profile');
-  };
-
-  // Navigate to the order tracking page
-  const handleTrackOrder = () => {
-    navigate('/track-order');
+  // Navigate to the restaurant's management page (for owners)
+  const handleRestaurantManagement = (restaurantId) => {
+    navigate(`/manage-restaurant/${restaurantId}`);
   };
 
   // Fetch the restaurant data when the component loads
@@ -102,14 +100,16 @@ const HomePage = () => {
               >
                 Logout
               </button>
+              {userRole === 'owner' && (
+                <button
+                  onClick={() => handleRestaurantManagement('your-restaurant-id')} // Pass correct restaurant ID
+                  className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+                >
+                  Manage Restaurant
+                </button>
+              )}
               <button
-                onClick={handleUserManagement}
-                className="bg-green-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
-              >
-                Manage Profile
-              </button>
-              <button
-                onClick={handleTrackOrder}
+                onClick={() => navigate('/track-order')}
                 className="bg-purple-500 text-white py-2 px-6 rounded-lg shadow-md hover:bg-purple-600 transition duration-300"
               >
                 Track Order
